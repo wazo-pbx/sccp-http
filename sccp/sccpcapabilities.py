@@ -17,13 +17,13 @@ class SCCPCapabilitiesRes(SCCPMessage):
         Constructor
         '''
         SCCPMessage.__init__(self, SCCPMessageType.CapabilitiesResMessage)
-        self.capCount=3
-        self.payLoads="\x19\x00\x00\x00\x78\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
-        self.payLoads=self.payLoads+"\x04\x00\x00\x00\x28\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
-        self.payLoads=self.payLoads+"\x02\x00\x00\x00\x28\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+        self.capCount = 3
+        self.payLoads = b"\x19\x00\x00\x00\x78\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+        self.payLoads += b"\x04\x00\x00\x00\x28\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+        self.payLoads += b"\x02\x00\x00\x00\x28\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
 
     def pack(self):
         strPack = SCCPMessage.pack(self)
-        strPack = strPack + pack("L",self.capCount) + pack("H",0)
+        strPack = strPack + pack("H",self.capCount) + pack("H",0)
         strPack = strPack + self.payLoads
         return strPack

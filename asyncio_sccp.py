@@ -1,6 +1,7 @@
 import asyncio
 from sccpphone import SCCPPhone
 from actors.callactor import CallActor
+import time
 
 class SCCPPhoneContoller:
     def __init__(self):
@@ -50,6 +51,13 @@ async def register_phone(host, port, name, loop):
     phone.reader = reader
     phone.writer = writer
     phone.register()
+    time.sleep(0.1)
+    phone.onCapabilitiesReq(None)
+    print('dialing...')
+    phone.dial('1000#')
+
+    while True:
+        pass
 
 
 

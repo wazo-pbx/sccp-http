@@ -126,15 +126,15 @@ class SCCPPhone():
 
     def onCapabilitiesReq(self,message):
         self.log("sending capabilities response")
-        self.client.sendSccpMessage(SCCPCapabilitiesRes())
+        self.writer.write(make_sccp_packet(SCCPCapabilitiesRes()))
         self.log("sending button template request message")
-        self.client.sendSccpMessage(SCCPButtonTemplateReq())
+        self.writer.write(make_sccp_packet(SCCPButtonTemplateReq()))
         self.log("sending line status request message")
-        self.client.sendSccpMessage(SCCPLineStatReq(1))
+        self.writer.write(make_sccp_packet(SCCPLineStatReq(1)))
         self.log("sending register available lines")
-        self.client.sendSccpMessage(SCCPRegisterAvailableLines())
+        self.writer.write(make_sccp_packet(SCCPRegisterAvailableLines()))
         self.log("sending time date request message")
-        self.client.sendSccpMessage(SCCPTimeDateReq())
+        self.writer.write(make_sccp_packet(SCCPTimeDateReq()))
 
 
     def onDefineTimeDate(self,message):
@@ -172,11 +172,11 @@ class SCCPPhone():
         else:
             event = int(car)
         message = SCCPKeyPadButton(event)
-        self.client.sendSccpMessage(message)
+        self.writer.write(make_sccp_packet(message))
 
     def dial(self,numberToDial):
         self.log('dialing : ' + numberToDial)
-        self.client.sendSccpMessage(SCCPSoftKeyEvent("SKINNY_LBL_NEWCALL"))
+        self.writer.write(make_sccp_packet(SCCPSoftKeyEvent(SKINNY_LBL_NEWCALL)))
         for digit in numberToDial:
             self.onDialPadButtonPushed(digit)
 
