@@ -1,16 +1,17 @@
 import asyncio
 from sccpphone import SCCPPhone
 from actors.callactor import CallActor
+from utils.timer import Timer
 import time
+from network.sccpprotocol import SCCPProtocol
 
 class SCCPPhoneContoller:
     def __init__(self):
         self.log = phone_log
 
     def createTimer(self, intervalSecs, timerCallback):
-        # pass
+        print('creating timer')
         self.keepalive_timer = Timer(intervalSecs, timerCallback)
-        self.keepalive_timer.start()
 
     def onRegistered(self):
         self.log('Registered...')
@@ -30,7 +31,7 @@ class SCCPPhoneContoller:
 def phone_log(msg):
     print(msg)
 
-async def register_phone(host, port, name, loop):
+async def run_phone(host, port, name, loop):
     controller = SCCPPhoneContoller()
     callActor = CallActor()
 
@@ -46,24 +47,24 @@ async def register_phone(host, port, name, loop):
     callActor.setPhone(phone)
     callActor.setTimerProvider(controller)
     callActor.setAutoAnswer(True)
+    on_con_lost = loop.create_future()
+    message = 'Hello World!'
+    transport, protocol =  await loop.create_connection(SCCPProtocol, host, port)
+    # protocol.client = phone
+    task = asyncio.create_task(phone.run(protocol))
+    # loop.run_until_complete(task)
+    # phone.dial('1000#')
 
-    reader, writer = await asyncio.open_connection(host, port, loop=loop)
-    phone.reader = reader
-    phone.writer = writer
-    phone.register()
-    time.sleep(0.1)
-    phone.onCapabilitiesReq(None)
-    print('dialing...')
-    phone.dial('1000#')
-
-    while True:
-        pass
+    try:
+        await on_con_lost
+    finally:
+        transport.close()
 
 
 
 def main():
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(register_phone('10.33.0.1', 2000, 'SEP00164697AAAA', loop))
+    loop.run_until_complete(run_phone('10.33.0.1', 2000, 'SEP00164697AAAA', loop))
     loop.close()
 
 

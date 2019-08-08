@@ -46,5 +46,4 @@ class SCCPRegister(SCCPMessage):
         packed += pack("III",self.deviceType,self.maxStreams,0)
         packed += b'\x0B'+ b'\x00'+ b'\x60'+ b'\x85'
         packed += pack('IIII',0,0,0,0)
-        print(packed)
         return packed

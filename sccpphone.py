@@ -3,7 +3,7 @@ Created on Jun 20, 2011
 
 @author: lebleu1
 '''
-from network.sccpclientfactory import SCCPClientFactory
+from network.sccpclient import SCCPClient
 from sccp.sccpmessagetype import SCCPMessageType
 from sccp.sccpregister import SCCPRegister
 from sccp.sccpcapabilities import SCCPCapabilitiesRes
@@ -47,6 +47,10 @@ class SCCPPhone():
     def setLogger(self,logger):
         self.log = logger
 
+    async def run(self, protocol):
+        self.complete_construction(protocol)
+        protocol.client_ready(self)
+
     def setTimerProvider(self,timerProvider):
         self.timerProvider = timerProvider
 
@@ -63,36 +67,30 @@ class SCCPPhone():
         self.log(self.deviceName + ' adding call handler')
         self.callHandlers.add(callHandler)
 
-    def createClient(self):
-        self.log('creating sccp client factory')
-        self.client = SCCPClientFactory(
-                        self.on_sccp_connect_success,
-                        self.on_sccp_connect_fail)
-        self.client.handleUnknownMessage(self.onUnknownMessage)
-        self.client.addHandler(SCCPMessageType.RegisterAckMessage,self.onRegisteredAck)
-        self.client.addHandler(SCCPMessageType.CapabilitiesReqMessage,self.onCapabilitiesReq)
-        self.client.addHandler(SCCPMessageType.KeepAliveAckMessage,self.onKeepAliveAck)
-        self.client.addHandler(SCCPMessageType.DefineTimeDate,self.onDefineTimeDate)
-        self.client.addHandler(SCCPMessageType.SetSpeakerModeMessage,self.onSetSpeakerMode)
-        self.client.addHandler(SCCPMessageType.CallStateMessage,self.onCallState)
-        self.client.addHandler(SCCPMessageType.ActivateCallPlaneMessage,self.onActivateCallPlane)
-        self.client.addHandler(SCCPMessageType.StartToneMessage,self.onStartTone)
-        self.client.addHandler(SCCPMessageType.LineStatMessage,self.onLineStat)
-        self.client.addHandler(SCCPMessageType.RegisterRejectMessage,self.onRegisterRejectMessage)
-        self.client.addHandler(SCCPMessageType.SetRingerMessage,self.onSetRingerMessage)
-        return self.client
+    def complete_construction(self, protocol):
+        self.log('completing construction')
+        self.protocol = protocol
+        self.protocol.handleUnknownMessage(self.onUnknownMessage)
+        self.protocol.addHandler(SCCPMessageType.RegisterAckMessage,self.onRegisteredAck)
+        self.protocol.addHandler(SCCPMessageType.CapabilitiesReqMessage,self.onCapabilitiesReq)
+        self.protocol.addHandler(SCCPMessageType.KeepAliveAckMessage,self.onKeepAliveAck)
+        self.protocol.addHandler(SCCPMessageType.DefineTimeDate,self.onDefineTimeDate)
+        self.protocol.addHandler(SCCPMessageType.SetSpeakerModeMessage,self.onSetSpeakerMode)
+        self.protocol.addHandler(SCCPMessageType.CallStateMessage,self.onCallState)
+        self.protocol.addHandler(SCCPMessageType.ActivateCallPlaneMessage,self.onActivateCallPlane)
+        self.protocol.addHandler(SCCPMessageType.StartToneMessage,self.onStartTone)
+        self.protocol.addHandler(SCCPMessageType.LineStatMessage,self.onLineStat)
+        self.protocol.addHandler(SCCPMessageType.RegisterRejectMessage,self.onRegisterRejectMessage)
+        self.protocol.addHandler(SCCPMessageType.SetRingerMessage,self.onSetRingerMessage)
 
     def register(self):
+        print('registering...')
         register_message = SCCPRegister(self.deviceName, self.host)
-        self.writer.write(make_sccp_packet(register_message))
-
+        self.protocol.send_sccp_message(register_message)
 
     def on_sccp_connect_success(self):
-        pass
-        # self.log('Connected to server. Sending register with phone set : ' + self.deviceName)
-        # register_message = SCCPRegister(self.deviceName, self.host)
-        # self.client.sendSccpMessage(registerMessage)
-        # self.writer.write(register_message.pack())
+        # reason is a twisted.python.failure.Failure  object
+        self.register()
 
     def on_sccp_connect_fail(self, reason):
         # reason is a twisted.python.failure.Failure  object
@@ -126,15 +124,15 @@ class SCCPPhone():
 
     def onCapabilitiesReq(self,message):
         self.log("sending capabilities response")
-        self.writer.write(make_sccp_packet(SCCPCapabilitiesRes()))
+        self.client.sendSccpMessage(SCCPCapabilitiesRes())
         self.log("sending button template request message")
-        self.writer.write(make_sccp_packet(SCCPButtonTemplateReq()))
+        self.client.sendSccpMessage(SCCPButtonTemplateReq())
         self.log("sending line status request message")
-        self.writer.write(make_sccp_packet(SCCPLineStatReq(1)))
+        self.client.sendSccpMessage(SCCPLineStatReq(1))
         self.log("sending register available lines")
-        self.writer.write(make_sccp_packet(SCCPRegisterAvailableLines()))
+        self.client.sendSccpMessage(SCCPRegisterAvailableLines())
         self.log("sending time date request message")
-        self.writer.write(make_sccp_packet(SCCPTimeDateReq()))
+        self.client.sendSccpMessage(SCCPTimeDateReq())
 
 
     def onDefineTimeDate(self,message):
@@ -172,11 +170,11 @@ class SCCPPhone():
         else:
             event = int(car)
         message = SCCPKeyPadButton(event)
-        self.writer.write(make_sccp_packet(message))
+        self.client.sendSccpMessage(message)
 
     def dial(self,numberToDial):
         self.log('dialing : ' + numberToDial)
-        self.writer.write(make_sccp_packet(SCCPSoftKeyEvent(SKINNY_LBL_NEWCALL)))
+        self.client.sendSccpMessage(SCCPSoftKeyEvent(SKINNY_LBL_NEWCALL))
         for digit in numberToDial:
             self.onDialPadButtonPushed(digit)
 
