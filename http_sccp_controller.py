@@ -2,6 +2,7 @@
 Created on Aug 7, 2019
 
 @author: nballas
+# to run: uvicorn http_sccp_controller:sccp_controller --reload
 '''
 
 import asyncio
