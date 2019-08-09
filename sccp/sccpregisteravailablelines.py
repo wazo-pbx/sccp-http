@@ -16,8 +16,8 @@ class SCCPRegisterAvailableLines(SCCPMessage):
         Constructor
         '''
         SCCPMessage.__init__(self, SCCPMessageType.RegisterAvailableLinesMessage)
-        self.nboflines=1
-        
+        self.nboflines = 1
+
     def pack(self):
         strPack = SCCPMessage.pack(self)
         strPack = strPack + pack("L",self.nboflines)

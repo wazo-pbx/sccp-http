@@ -13,7 +13,7 @@ class TestLineStat(unittest.TestCase):
     def testUnPack(self):
         lineStat = SCCPLineStat()
         receivedBuffer = '\x04\x00\x00\x00\x31\x30\x32\x31\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
-        lineStat.unPack(receivedBuffer)
+        lineStat.unpack(receivedBuffer)
         self.assertEquals(lineStat.line,4)
         self.assertEquals(lineStat.dirNumber,'1021')
 

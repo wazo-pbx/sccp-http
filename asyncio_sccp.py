@@ -9,71 +9,71 @@ class SCCPPhoneContoller:
     def __init__(self):
         self.log = phone_log
         self.registree = None
-        self.callDurationMin = 200
-        self.callDurationMax = 500
-        self.autoAnswer = False
-        self.currentCallState = SCCPCallState.SCCP_CHANNELSTATE_ONHOOK
-        self.currentCallId = 0
-        self.currentLine = 0
+        self.call_duration_min = 200
+        self.call_duration_max = 500
+        self.auto_answer = False
+        self.current_call_state = SCCPCallState.SCCP_CHANNELSTATE_ONHOOK
+        self.current_call_id = 0
+        self.current_line = 0
         self.phone = None
 
-    def createTimer(self, intervalSecs, timerCallback):
+    def create_timer(self, interval_secs, timer_callback):
         self.log('creating timer')
-        self.keepalive_timer = Timer(intervalSecs, timerCallback)
+        self.keepalive_timer = Timer(interval_secs, timer_callback)
 
-    def onRegistered(self):
+    def on_registered(self):
         self.registree.registered = True
 
-    def onLineStat(self, message):
+    def on_line_stat(self, message):
         pass
 
-    def displayLineInfo(self, line, number):
+    def display_line_info(self, line, number):
         pass
 
-    def setDateTime(self, day,month,year,hour,minute,seconds):
+    def set_datetime(self, day, month, year, hour, minute, seconds):
         pass
 
-    def setPhone(self,phone):
+    def set_phone(self, phone):
         self.phone = phone
 
-    def createOneShotTimer(self, timerInSec, timerHandler):
+    def create_one_shot_timer(self, timer_in_sec, timer_handler):
         pass
 
-    def getAutoAnswer(self):
-        return self.autoAnswer
+    def get_auto_answer(self):
+        return self.auto_answer
 
-    def setTimerProvider(self,timerProvider):
-        self.timerProvider = timerProvider
+    def set_timer_provider(self, timer_provider):
+        self.timer_provider = timer_provider
 
-    def setAutoAnswer(self,autoAnswer):
-        self.autoAnswer = autoAnswer
+    def set_auto_answer(self, auto_answer):
+        self.auto_answer = auto_answer
 
 
-    def handleCall(self,line,callid,callState):
-        if not self.autoAnswer:
+    def handle_call(self, line, callid, call_state):
+        if not self.auto_answer:
             return
-        if callState == SCCPCallState.SCCP_CHANNELSTATE_RINGING:
-                if self.currentCallId == 0:
+        if call_state == SCCPCallState.SCCP_CHANNELSTATE_RINGING:
+                if self.current_call_id == 0:
                     self.phone.answer_call()
-                    self.currentCallId = callid
-                    self.currentLine = line
-        if callState == SCCPCallState.SCCP_CHANNELSTATE_CONNECTED:
-            timerInSec = 1#random.randrange(self.callDurationMin,self.callDurationMax)
-            self.timerProvider.createOneShotTimer(timerInSec,self.onCallEndTimer)
+                    self.current_call_id = callid
+                    self.current_line = line
+        if call_state == SCCPCallState.SCCP_CHANNELSTATE_CONNECTED:
+            timerInSec = 1#random.randrange(self.call_duration_min,self.call_duration_max)
+            self.timer_provider.create_one_shot_timer(timerInSec,self.on_call_end_timer)
 
-        if callState == SCCPCallState.SCCP_CHANNELSTATE_ONHOOK and self.currentCallId == callid:
-            self.currentCallId = 0
+        if call_state == SCCPCallState.SCCP_CHANNELSTATE_ONHOOK and self.current_call_id == callid:
+            self.current_call_id = 0
 
-        if callState == SCCPCallState.SCCP_CHANNELSTATE_CALLWAITING:
+        if call_state == SCCPCallState.SCCP_CHANNELSTATE_CALLWAITING:
             self.phone.test_complete = True
 
-        self.currentCallState = callState
+        self.current_call_state = call_state
 
-    def onCallEndTimer(self):
-        self.phone.end_call(self.currentLine,self.currentCallId)
+    def on_call_end_timer(self):
+        self.phone.end_call(self.current_line,self.current_call_id)
 
     async def hangup(self):
-        self.phone.end_call(self.currentLine,self.currentCallId)
+        self.phone.end_call(self.current_line,self.current_call_id)
 
     async def call(self, number):
         self.phone.dial(str(number) + '#')
@@ -94,15 +94,15 @@ async def register_phone(host, port, name, loop):
     phone = SCCPPhone(host, name)
     phone.log = phone_log
 
-    phone.setTimerProvider(controller)
-    phone.setDisplayHandler(controller)
-    phone.setRegisteredHandler(controller)
-    phone.setDateTimePicker(controller)
-    phone.addCallHandler(controller)
+    phone.set_timer_provider(controller)
+    phone.set_display_handler(controller)
+    phone.set_registered_handler(controller)
+    phone.set_datetime_picker(controller)
+    phone.add_call_handler(controller)
 
-    controller.setPhone(phone)
-    controller.setTimerProvider(controller)
-    controller.setAutoAnswer(True)
+    controller.set_phone(phone)
+    controller.set_timer_provider(controller)
+    controller.set_auto_answer(True)
 
     transport, protocol =  await loop.create_connection(SCCPProtocol, host, port)
     task = asyncio.create_task(phone.run(protocol))
@@ -147,7 +147,7 @@ async def get_received_phone_events(future):
 
 async def get_phone_status(future):
     """
-    Gte the status of the phone, i.e. is a call in progress?
+    Get the status of the phone, i.e. is a call in progress?
     """
     if controller:
         future.set_result(controller.phone.call_in_progress)

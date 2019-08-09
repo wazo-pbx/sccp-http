@@ -55,7 +55,7 @@ class TestMessageFactory(unittest.TestCase):
     def testCreateUnkownType(self):
         receivedBuffer = "\x00\x00\x00\x00\xFF\xFF\x00\x00\x00\x0b\x00\x00"
         msg = self.messageFactory.create(receivedBuffer)
-        self.assertEquals(0xFFFF,msg.sccpmessageType)
+        self.assertEquals(0xFFFF,msg.sccp_message_type)
         
 
 

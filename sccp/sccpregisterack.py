@@ -13,15 +13,15 @@ class SCCPRegisterAck(SCCPMessage):
 
     def __init__(self):
         SCCPMessage.__init__(self, SCCPMessageType.RegisterAckMessage)
-        self.keepAliveInterval = 50
-        self.dateTemplate = ""
-        self.secondaryKeepAliveInterval=32
+        self.keep_alive_interval = 50
+        self.date_template = ""
+        self.secondarykeep_alive_interval=32
 
 
-    def unPack(self,buffer):
-        self.keepAliveInterval = unpack("I",buffer[:4])[0]
-        self.dateTemplate = buffer[4:].split(b"\x00")[0]
-        endDateTemplate =  buffer[4:].find(b"\x00")
+    def unpack(self,buffer):
+        self.keep_alive_interval = unpack("I",buffer[:4])[0]
+        self.date_template = buffer[4:].split(b"\x00")[0]
+        enddate_template =  buffer[4:].find(b"\x00")
 
-        bufferLeft = buffer[4+endDateTemplate+3:]
-        self.secondaryKeepAliveInterval = unpack("I",bufferLeft[:4])[0]
+        bufferLeft = buffer[4+enddate_template+3:]
+        self.secondarykeep_alive_interval = unpack("I",bufferLeft[:4])[0]

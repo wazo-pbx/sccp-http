@@ -14,7 +14,7 @@ class TestSccpDefineDateTime(unittest.TestCase):
         defineDateTime = SCCPDefineTimeDate()
         receivedBuffer = '\xdb\x07\x00\x00\x06\x00\x00\x00\x04\x00\x00\x00\x09\x00\x00\x00' \
             '\x12\x00\x00\x00\x2a\x00\x00\x00\x25\x00\x00\x00\x0F\x00\x00\x00\xfd\xf7\xf0\x4d'
-        defineDateTime.unPack(receivedBuffer)
+        defineDateTime.unpack(receivedBuffer)
         self.assertEquals(defineDateTime.year,2011)
         self.assertEquals(defineDateTime.month,6)
         self.assertEquals(defineDateTime.dayOfWeek,4)

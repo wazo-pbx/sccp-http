@@ -26,11 +26,11 @@ class TestSCCPClientFactory(unittest.TestCase):
         unused callback
         '''
     def handleUnknown(self,message):
-        self.lastMessageTypeReceived = message.sccpmessageType
+        self.lastMessageTypeReceived = message.sccp_message_type
         self.unkown = True
     
     def handleMessage(self,message):
-        self.lastMessageTypeReceived = message.sccpmessageType
+        self.lastMessageTypeReceived = message.sccp_message_type
         self.handled = True
         
 

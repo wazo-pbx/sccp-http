@@ -13,7 +13,7 @@ class TestSccpSetSpeakerMode(unittest.TestCase):
     def testUnPack(self):
         setSpeakerMode = SCCPSetSpeakerMode()
         receivedBuffer = '\x02\x00\x00\x00'
-        setSpeakerMode.unPack(receivedBuffer)
+        setSpeakerMode.unpack(receivedBuffer)
         self.assertEquals(setSpeakerMode.mode,2)
 
 if __name__ == "__main__":

@@ -4,7 +4,7 @@ Created on Jun 14, 2011
 @author: lebleu1
 '''
 import unittest
-from network.ipAddress import IpAddress
+from network.ip_address import IpAddress
 
 class Test(unittest.TestCase):
     

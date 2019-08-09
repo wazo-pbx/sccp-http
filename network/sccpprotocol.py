@@ -37,7 +37,7 @@ class SCCPProtocol(asyncio.Protocol):
             packet = self.received[self.prefix_length:length + self.prefix_length]
             self.received = self.received[length + self.prefix_length:]
             msg = self.message_factory.create(packet)
-            msg.unPack(packet[8:])
+            msg.unpack(packet[8:])
             self.handle_message(msg)
 
     def client_ready(self, client):
@@ -61,13 +61,13 @@ class SCCPProtocol(asyncio.Protocol):
         self.message_handlers[self.UNKNOWN_KEY] = unknownHandler
 
     def handle_message(self,message):
-        if message.sccpmessageType in self.message_handlers:
-            self.message_handlers[message.sccpmessageType](message)
+        if message.sccp_message_type in self.message_handlers:
+            self.message_handlers[message.sccp_message_type](message)
         else:
             if self.UNKNOWN_KEY in self.message_handlers:
                 self.message_handlers[self.UNKNOWN_KEY](message)
             else:
-                print("ERROR unknown message " + str(message.sccpmessageType) + " no handler")
+                print("ERROR unknown message " + str(message.sccp_message_type) + " no handler")
 
     def send_data(self, data):
         self.transport.write(data)

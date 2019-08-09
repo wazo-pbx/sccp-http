@@ -6,7 +6,7 @@ Created on Jun 14, 2011
 from struct import pack
 class IpAddress:
 
-    def __init__(self,address):
+    def __init__(self, address):
         self.address = address
 
     def __eq__(self,obj):

@@ -16,6 +16,6 @@ class SCCPSetSpeakerMode(SCCPMessage):
         self.mode = 0
         
         
-    def unPack(self,buffer):
+    def unpack(self,buffer):
         self.mode = unpack("I",buffer[:4])[0]
 

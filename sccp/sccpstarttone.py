@@ -13,7 +13,7 @@ class SCCPStartTone(SCCPMessage):
         SCCPMessage.__init__(self, SCCPMessageType.StartToneMessage)
         
         
-    def unPack(self, buffer):
+    def unpack(self, buffer):
         datas = unpack('IIII',buffer[0:16])
         self.tone = datas[0]
         self.toneTimeout=datas[1]

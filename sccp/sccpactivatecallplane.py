@@ -9,11 +9,10 @@ from struct import unpack
 
 
 class SCCPActivateCallPlane(SCCPMessage):
-    
+
 
     def __init__(self):
         SCCPMessage.__init__(self, SCCPMessageType.ActivateCallPlaneMessage)
-        
-    def unPack(self, buffer):
-        self.line = unpack("L",buffer[:4])[0]
 
+    def unpack(self, buffer):
+        self.line = unpack("L", buffer[:4])[0]

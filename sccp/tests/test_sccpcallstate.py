@@ -12,7 +12,7 @@ class TestSccpCallState(unittest.TestCase):
         callState = SCCPCallState()
         receivedBuffer = '\x04\x00\x00\x00\x01\x00\x00\x00\x1a\x00'\
                         '\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00\x00\x00\x00\x00'
-        callState.unPack(receivedBuffer)
+        callState.unpack(receivedBuffer)
         self.assertEquals(callState.callState,SCCPCallState.SCCP_CHANNELSTATE_RINGING)
         self.assertEquals(callState.line,1)
         self.assertEquals(callState.callId,26)

@@ -6,7 +6,7 @@ Created on Jun 14, 2011
 from sccp.sccpmessage import SCCPMessage
 from sccp.sccpmessagetype import SCCPMessageType
 from struct import pack
-from network.ipAddress import IpAddress
+from network.ip_address import IpAddress
 
 class SCCPCapabilitiesRes(SCCPMessage):
     '''
