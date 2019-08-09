@@ -73,6 +73,7 @@ async def main(loop):
     while not phone.call_in_progress:
         await asyncio.sleep(0.1)
 
+# to run: uvicorn http_sccp_controller:sccp_controller --reload
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
     try:
