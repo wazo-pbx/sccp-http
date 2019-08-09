@@ -4,6 +4,8 @@ from utils.timer import Timer
 import time
 from network.sccpprotocol import SCCPProtocol
 from sccp.sccpcallstate import SCCPCallState
+import logging
+
 
 class SCCPPhoneContoller:
     def __init__(self):
@@ -78,10 +80,10 @@ class SCCPPhoneContoller:
     async def call(self, number):
         self.phone.dial(str(number) + '#')
 
-
+logger = logging.getLogger('asyncio_accp_phone')
 
 def phone_log(msg):
-    print(time.time(), msg)
+    logger.info(msg)
 
 controller = None
 
