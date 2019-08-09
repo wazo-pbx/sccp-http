@@ -2,13 +2,14 @@
 Created on Aug 7, 2019
 
 @author: nballas
-# to run: uvicorn http_sccp_controller:sccp_controller --reload
+@about: REST interface to the asyncio_sccp phone
+to run: uvicorn http_sccp_controller:sccp_controller --reload
 '''
 
 import asyncio
 from fastapi import FastAPI
-from asyncio_sccp import register_phone, place_call
-
+from asyncio_sccp import register_phone, place_call, hangup_call
+from asyncio_sccp import get_received_phone_events, get_phone_status, get_phone_states
 phone = None
 sccp_controller = FastAPI()
 
@@ -33,17 +34,23 @@ async def register(host: str, port: int, device_name: str):
 
 
 @sccp_controller.get("/events")
-def all_events():
-    return {"events": ["these", "are", "events", "that", "were", "received"]}
+async def all_events():
+    events = asyncio.Future()
+    await get_received_phone_events(events)
+    states = asyncio.Future()
+    await get_phone_states(states)
+    return {"events": events.result(), "callStates": states.result()}
 
 @sccp_controller.post("/hangup")
-def register():
-    return {"I will hangup": "What?! Why?!"}
+async def hangup():
+    await hangup_call()
 
 @sccp_controller.get("/status")
-def status():
-    return {"status": "I am hungry"}
+async def status():
+    status = asyncio.Future()
+    await get_phone_status(status)
+    return {"callInProgress": status.result()}
 
 @sccp_controller.post("/answer")
-def answer():
+async def answer():
     return {"Hey": "What's up?"}

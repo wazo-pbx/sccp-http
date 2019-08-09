@@ -41,6 +41,8 @@ class SCCPPhone():
         self.callHandlers = set()
         self.registered = False
         self.call_in_progress = False
+        self.messages_received = []
+        self.states_history = []
 
     def setLogger(self,logger):
         self.log = logger
@@ -108,6 +110,7 @@ class SCCPPhone():
 
     def onUnknownMessage(self,message):
         self.log('receive unkown message ' + message.toStr())
+        self.messages_received.append(message.toStr())
 
     def onRegisteredAck(self,registerAck):
         self.log("sccp phone registered")
@@ -116,6 +119,7 @@ class SCCPPhone():
         self.log("-- secondaryKeepAliveInterval : " + str(registerAck.secondaryKeepAliveInterval))
         self.timerProvider.createTimer(registerAck.keepAliveInterval,self.onKeepAliveTimer)
         self.registeredHandler.onRegistered()
+        self.messages_received.append(registerAck.toStr())
 
 
     def onKeepAliveAck(self,message):
@@ -147,7 +151,9 @@ class SCCPPhone():
         self.currentLine = message.line
         self.currentCallId = message.callId
         self.callState = message.callState
-        self.call_in_progress = message.callState == SCCPCallState.SCCP_CHANNELSTATE_ONHOOK
+        self.call_in_progress = message.callState == SCCPCallState.SCCP_CHANNELSTATE_CONNECTED
+        self.messages_received.append(message.toStr())
+        self.states_history.append(SCCPCallState.sccp_channelstates[message.callState])
 
         for callHandler in self.callHandlers:
             callHandler.handleCall(message.line,message.callId,message.callState)
@@ -188,10 +194,8 @@ class SCCPPhone():
         self.protocol.send_sccp_message(message)
 
     def answer_call(self):
-        self.call_in_progress = True
         self.onSoftKey(SKINNY_LBL_ANSWER)
 
     def end_call(self, line, callId):
         message = SCCPSoftKeyEvent(SKINNY_LBL_ENDCALL,line,callId)
         self.protocol.send_sccp_message(message)
-        self.call_in_progress = False
