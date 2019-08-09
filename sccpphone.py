@@ -40,6 +40,7 @@ class SCCPPhone():
         self.deviceName = deviceName
         self.callHandlers = set()
         self.registered = False
+        self.call_in_progress = False
 
     def setLogger(self,logger):
         self.log = logger
@@ -51,8 +52,9 @@ class SCCPPhone():
     def setTimerProvider(self,timerProvider):
         self.timerProvider = timerProvider
 
-    def setRegisteredHandler(self,registeredHandler):
-        self.registeredHandler = registeredHandler
+    def setRegisteredHandler(self,registered_handler):
+        self.registeredHandler = registered_handler
+        self.registeredHandler.registree = self
 
     def setDateTimePicker(self,dateTimePicker):
         self.dateTimePicker = dateTimePicker
@@ -130,7 +132,7 @@ class SCCPPhone():
         self.protocol.send_sccp_message(SCCPRegisterAvailableLines())
         self.log("sending time date request message")
         self.protocol.send_sccp_message(SCCPTimeDateReq())
-        self.registered = True
+
 
 
     def onDefineTimeDate(self,message):
@@ -143,8 +145,9 @@ class SCCPPhone():
     def onCallState(self,message):
         self.log('call state line : ' + str(message.line) + ' for callId '+ str(message.callId) + ' is ' + str(SCCPCallState.sccp_channelstates[message.callState]))
         self.currentLine = message.line
-        self.currentCallId=message.callId
-        self.callState=message.callState
+        self.currentCallId = message.callId
+        self.callState = message.callState
+        self.call_in_progress = message.callState == SCCPCallState.SCCP_CHANNELSTATE_ONHOOK
 
         for callHandler in self.callHandlers:
             callHandler.handleCall(message.line,message.callId,message.callState)
@@ -184,9 +187,11 @@ class SCCPPhone():
             message = SCCPSoftKeyEvent(event)
         self.protocol.send_sccp_message(message)
 
-    def answerCall(self):
+    def answer_call(self):
+        self.call_in_progress = True
         self.onSoftKey(SKINNY_LBL_ANSWER)
 
-    def endCall(self, line, callId):
+    def end_call(self, line, callId):
         message = SCCPSoftKeyEvent(SKINNY_LBL_ENDCALL,line,callId)
         self.protocol.send_sccp_message(message)
+        self.call_in_progress = False

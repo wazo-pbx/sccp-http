@@ -8,13 +8,14 @@ from network.sccpprotocol import SCCPProtocol
 class SCCPPhoneContoller:
     def __init__(self):
         self.log = phone_log
+        self.registree = None
 
     def createTimer(self, intervalSecs, timerCallback):
-        print('creating timer')
+        self.log('creating timer')
         self.keepalive_timer = Timer(intervalSecs, timerCallback)
 
     def onRegistered(self):
-        self.log('Registered...')
+        self.registree.registered = True
 
     def onLineStat(self, message):
         pass
@@ -55,6 +56,7 @@ async def register_phone(future, host, port, name, loop):
 
     while not phone.registered:
         await asyncio.sleep(0.1)
+
     future.set_result(phone)
 
 
@@ -63,18 +65,17 @@ async def place_call(phone, number_to_dial, loop):
     task = asyncio.create_task(phone.dial(number_to_dial))
     await task
 
-
 async def main(loop):
     all_done = asyncio.Future()
     await register_phone(all_done, '10.33.0.1', 2000, 'SEP00164697AAAA', loop)
     phone = await all_done
     await place_call(phone, '1000#', loop)
-    while True:
-        pass
+    while not phone.call_in_progress:
+        await asyncio.sleep(0.1)
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
     try:
         loop.run_until_complete(main(loop))
     finally:
-        loop.close()
+        pass

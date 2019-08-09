@@ -6,23 +6,7 @@ Created on Aug 7, 2019
 
 import asyncio
 from fastapi import FastAPI
-from sccpphone import SCCPPhone
-from actors.callactor import CallActor
-
-from threading import Timer, Thread
-from twisted.internet import reactor
-from multiprocessing import Process
-
-# Thread(target=reactor.run).start()
-async def run_reactor():
-    reactor.run()
-
-task = asyncio.create_task(run_reactor())
-
-
-
-def phone_log(msg):
-    print(msg)
+from asyncio_sccp import register_phone, place_call
 
 phone = None
 sccp_controller = FastAPI()
@@ -33,28 +17,17 @@ def read_root():
 
 
 @sccp_controller.post("/dial/{extension}")
-def dial(extension: int):
-    phone.dial(str(extension) + '#')
+async def dial(extension: int):
+    await phone.dial(str(extension) + '#')
 
 @sccp_controller.post("/register/{host}/{port}/{device_name}")
-def register(host: str, port: int, device_name: str):
-    controller = SCCPPhoneContoller()
-    phone = SCCPPhone(host, device_name)
-    phone.log = phone_log
-    callActor = CallActor()
-    callActor.setPhone(phone)
-    callActor.setTimerProvider(controller)
-    callActor.setAutoAnswer(True)
+async def register(host: str, port: int, device_name: str):
+    global phone
+    loop = asyncio.get_event_loop()
+    all_done = asyncio.Future()
+    await register_phone(all_done, host, port, device_name, loop)
+    phone = await all_done
 
-    phone.setTimerProvider(controller)
-    phone.setDisplayHandler(controller)
-    phone.setRegisteredHandler(controller)
-    phone.setDateTimePicker(controller)
-    phone.addCallHandler(callActor)
-    phone.createClient()
-    reader, writer = await asyncio.open_connection(host, port, loop=loop)
-    phone.reader = reader
-    phone.writer = writer
 
 
 
@@ -71,9 +44,5 @@ def status():
     return {"status": "I am hungry"}
 
 @sccp_controller.post("/answer")
-def register():
+def answer():
     return {"Hey": "What's up?"}
-
-@sccp_controller.delete("/stop")
-def stop():
-    reactor.stop()

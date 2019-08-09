@@ -34,7 +34,7 @@ class CallActor():
             return
         if callState == SCCPCallState.SCCP_CHANNELSTATE_RINGING:
                 if self.currentCallId == 0:
-                    self.phone.answerCall()
+                    self.phone.answer_call()
                     self.currentCallId = callid
                     self.currentLine = line
         if callState == SCCPCallState.SCCP_CHANNELSTATE_CONNECTED:
@@ -52,4 +52,4 @@ class CallActor():
 
 
     def onCallEndTimer(self):
-        self.phone.endCall(self.currentLine,self.currentCallId)
+        self.phone.end_call(self.currentLine,self.currentCallId)
