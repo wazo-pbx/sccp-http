@@ -82,8 +82,10 @@ class SCCPPhoneContoller:
 
 def phone_log(msg):
     print(time.time(), msg)
+
 controller = None
-async def register_phone(future, host, port, name, loop):
+
+async def register_phone(host, port, name, loop):
     """
     Creates an SCCP phone and registers it to the given host
     """
@@ -108,8 +110,6 @@ async def register_phone(future, host, port, name, loop):
 
     while not phone.registered:
         await asyncio.sleep(0.1)
-
-    future.set_result(controller)
 
 
 async def place_call(number_to_dial):
