@@ -9,21 +9,19 @@ from struct import unpack
 
 
 class SCCPRegisterAck(SCCPMessage):
-    
+
 
     def __init__(self):
         SCCPMessage.__init__(self, SCCPMessageType.RegisterAckMessage)
         self.keepAliveInterval = 50
         self.dateTemplate = ""
         self.secondaryKeepAliveInterval=32
-        
-        
+
+
     def unPack(self,buffer):
         self.keepAliveInterval = unpack("I",buffer[:4])[0]
-        self.dateTemplate = buffer[4:].split("\x00")[0]
-        endDateTemplate =  buffer[4:].find("\x00")
-        
+        self.dateTemplate = buffer[4:].split(b"\x00")[0]
+        endDateTemplate =  buffer[4:].find(b"\x00")
+
         bufferLeft = buffer[4+endDateTemplate+3:]
         self.secondaryKeepAliveInterval = unpack("I",bufferLeft[:4])[0]
-
-

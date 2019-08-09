@@ -29,12 +29,12 @@ class SCCPPhoneContoller:
         pass
 
 def phone_log(msg):
-    print(msg)
+    print(time.time(), msg)
 
-async def run_phone(host, port, name, loop):
+async def register_phone(future, host, port, name, loop):
+
     controller = SCCPPhoneContoller()
     callActor = CallActor()
-
     phone = SCCPPhone(host, name)
     phone.log = phone_log
 
@@ -47,28 +47,34 @@ async def run_phone(host, port, name, loop):
     callActor.setPhone(phone)
     callActor.setTimerProvider(controller)
     callActor.setAutoAnswer(True)
-    on_con_lost = loop.create_future()
-    message = 'Hello World!'
+
     transport, protocol =  await loop.create_connection(SCCPProtocol, host, port)
-    # protocol.client = phone
     task = asyncio.create_task(phone.run(protocol))
-    # loop.run_until_complete(task)
-    # phone.dial('1000#')
-
-    try:
-        await on_con_lost
-    finally:
-        transport.close()
+    await task
 
 
-
-def main():
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(run_phone('10.33.0.1', 2000, 'SEP00164697AAAA', loop))
-    loop.close()
+    while not phone.registered:
+        await asyncio.sleep(0.1)
+    future.set_result(phone)
 
 
+async def place_call(phone, number_to_dial, loop):
+    # global phone
+    task = asyncio.create_task(phone.dial(number_to_dial))
+    await task
 
+
+async def main(loop):
+    all_done = asyncio.Future()
+    await register_phone(all_done, '10.33.0.1', 2000, 'SEP00164697AAAA', loop)
+    phone = await all_done
+    await place_call(phone, '1000#', loop)
+    while True:
+        pass
 
 if __name__ == '__main__':
-    main()
+    loop = asyncio.get_event_loop()
+    try:
+        loop.run_until_complete(main(loop))
+    finally:
+        loop.close()

@@ -9,15 +9,14 @@ from struct import unpack
 
 
 class SCCPLineStat(SCCPMessage):
-    
+
 
     def __init__(self):
         SCCPMessage.__init__(self, SCCPMessageType.LineStatMessage)
-        self.line=0
+        self.line = 0
         self.dirNumber = ""
-        
-        
+
+
     def unPack(self,buffer):
         self.line = unpack("I",buffer[:4])[0]
-        self.dirNumber = buffer[4:].split("\x00")[0]
-
+        self.dirNumber = buffer[4:].split(b"\x00")[0]
