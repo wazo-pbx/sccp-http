@@ -15,6 +15,7 @@ class SCCPPhoneContoller:
         self.currentCallState = SCCPCallState.SCCP_CHANNELSTATE_ONHOOK
         self.currentCallId = 0
         self.currentLine = 0
+        self.phone = None
 
     def createTimer(self, intervalSecs, timerCallback):
         self.log('creating timer')
@@ -74,6 +75,9 @@ class SCCPPhoneContoller:
     async def hangup(self):
         self.phone.end_call(self.currentLine,self.currentCallId)
 
+    async def call(self, number):
+        self.phone.dial(str(number) + '#')
+
 
 
 def phone_log(msg):
@@ -105,50 +109,61 @@ async def register_phone(future, host, port, name, loop):
     while not phone.registered:
         await asyncio.sleep(0.1)
 
-    future.set_result(phone)
+    future.set_result(controller)
 
 
-async def place_call(phone, number_to_dial, loop):
+async def place_call(number_to_dial):
     """
     Call a given endpoint
     """
-    task = asyncio.create_task(phone.dial(number_to_dial))
+    task = asyncio.create_task(controller.call(number_to_dial))
     await task
 
 async def hangup_call():
     """
     hangup a call in progress
     """
-    task = asyncio.create_task(controller.hangup())
-    await task
+    if controller:
+        task = asyncio.create_task(controller.hangup())
+        await task
 
 async def pickup_call():
     """
     Call a given endpoint
     """
-    task = asyncio.create_task(controller.phone.answer_call())
-    await task
+    if controller:
+        task = asyncio.create_task(controller.phone.answer_call())
+        await task
 
 async def get_received_phone_events(future):
     """
     Gte the events received by the phone
     """
-    future.set_result(controller.phone.messages_received)
-    await future
+    if controller:
+        future.set_result(controller.phone.messages_received)
+        await future
+    else:
+        future.set_result(None)
 
 async def get_phone_status(future):
     """
     Gte the status of the phone, i.e. is a call in progress?
     """
-    future.set_result(controller.phone.call_in_progress)
-    await future
+    if controller:
+        future.set_result(controller.phone.call_in_progress)
+        await future
+    else:
+        future.set_result(None)
 
 async def get_phone_states(future):
     """
     Gte the status of the phone, i.e. is a call in progress?
     """
-    future.set_result(controller.phone.states_history)
-    await future
+    if controller:
+        future.set_result(controller.phone.states_history)
+        await future
+    else:
+        future.set_result(None)
 
 async def main(loop):
     """

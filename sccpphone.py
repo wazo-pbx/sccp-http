@@ -179,7 +179,7 @@ class SCCPPhone():
         message = SCCPKeyPadButton(event)
         self.protocol.send_sccp_message(message)
 
-    async def dial(self, number_to_dial):
+    def dial(self, number_to_dial):
         self.log('dialing : ' + str(number_to_dial))
         self.protocol.send_sccp_message(SCCPSoftKeyEvent(SKINNY_LBL_NEWCALL))
         for digit in number_to_dial:
