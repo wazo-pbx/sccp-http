@@ -10,22 +10,27 @@ import asyncio
 from fastapi import FastAPI
 from asyncio_sccp import register_phone, place_call, hangup_call
 from asyncio_sccp import get_received_phone_events, get_phone_status, get_phone_states
-
+from starlette.responses import Response, JSONResponse
+from sccpphone_errors import DeviceAlreadyRegistered, DeviceNotRegistered
+from starlette.status import HTTP_404_NOT_FOUND, HTTP_409_CONFLICT
 app = FastAPI()
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
-
-
 @app.post("/dial/{extension}")
-async def dial(extension: int):
-    await place_call(extension)
+async def dial(extension: int, response: Response):
+    try:
+        await place_call(extension)
+    except DeviceNotRegistered as error:
+        response.status_code = HTTP_404_NOT_FOUND
+        return error.message
 
 @app.post("/register/{host}/{port}/{device_name}")
-async def register(host: str, port: int, device_name: str):
+async def register(host: str, port: int, device_name: str, response: Response):
     loop = asyncio.get_event_loop()
-    await register_phone(host, port, device_name, loop)
+    try:
+        await register_phone(host, port, device_name, loop)
+    except DeviceAlreadyRegistered as error:
+        response.status_code = HTTP_409_CONFLICT
+        return error.message
 
 
 @app.get("/history")

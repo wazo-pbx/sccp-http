@@ -5,7 +5,7 @@ import time
 from network.sccpprotocol import SCCPProtocol
 from sccp.sccpcallstate import SCCPCallState
 import logging
-
+from sccpphone_errors import DeviceAlreadyRegistered, DeviceNotRegistered
 
 class SCCPPhoneContoller:
     def __init__(self):
@@ -21,7 +21,7 @@ class SCCPPhoneContoller:
 
     def create_timer(self, interval_secs, timer_callback):
         self.log('creating timer')
-        self.keepalive_timer = Timer(interval_secs, timer_callback)
+        Timer(interval_secs, timer_callback)
 
     def on_registered(self):
         self.registree.registered = True
@@ -39,7 +39,7 @@ class SCCPPhoneContoller:
         self.phone = phone
 
     def create_one_shot_timer(self, timer_in_sec, timer_handler):
-        pass
+        self._one_shot_timer = Timer(timer_in_sec, timer_handler, repeating=False)
 
     def get_auto_answer(self):
         return self.auto_answer
@@ -60,8 +60,8 @@ class SCCPPhoneContoller:
                     self.current_call_id = callid
                     self.current_line = line
         if call_state == SCCPCallState.SCCP_CHANNELSTATE_CONNECTED:
-            timerInSec = 1#random.randrange(self.call_duration_min,self.call_duration_max)
-            self.timer_provider.create_one_shot_timer(timerInSec,self.on_call_end_timer)
+            timer_in_sec = 5 #random.randrange(self.call_duration_min,self.call_duration_max)
+            self.timer_provider.create_one_shot_timer(timer_in_sec, self.on_call_end_timer)
 
         if call_state == SCCPCallState.SCCP_CHANNELSTATE_ONHOOK and self.current_call_id == callid:
             self.current_call_id = 0
@@ -71,8 +71,10 @@ class SCCPPhoneContoller:
 
         self.current_call_state = call_state
 
-    def on_call_end_timer(self):
+    async def on_call_end_timer(self):
+        self.log('ending call...')
         self.phone.end_call(self.current_line, self.current_call_id)
+        self.log('ended call...')
 
     async def hangup(self):
         self.phone.end_call(self.current_line, self.current_call_id)
@@ -92,6 +94,9 @@ async def register_phone(host, port, name, loop):
     Creates an SCCP phone and registers it to the given host
     """
     global controller
+    if controller is not None:
+        raise DeviceAlreadyRegistered(name)
+
     controller = SCCPPhoneContoller()
     phone = SCCPPhone(host, name)
     phone.log = phone_log
@@ -118,8 +123,11 @@ async def place_call(number_to_dial):
     """
     Call a given endpoint
     """
-    task = asyncio.create_task(controller.call(number_to_dial))
-    await task
+    if not controller:
+        raise DeviceNotRegistered()
+    else:
+        task = asyncio.create_task(controller.call(number_to_dial))
+        await task
 
 async def hangup_call():
     """

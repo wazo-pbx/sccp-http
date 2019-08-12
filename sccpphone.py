@@ -72,7 +72,7 @@ class SCCPPhone():
         self.log('completing construction')
         self.protocol = protocol
         self.protocol.handle_unknown_message(self.on_unknown_message)
-        self.protocol.add_handler(SCCPMessageType.RegisterAckMessage,self.on_registeredAck)
+        self.protocol.add_handler(SCCPMessageType.RegisterAckMessage,self.on_registered_ack)
         self.protocol.add_handler(SCCPMessageType.CapabilitiesReqMessage,self.on_capabilities_req)
         self.protocol.add_handler(SCCPMessageType.KeepAliveAckMessage,self.on_keep_alive_ack)
         self.protocol.add_handler(SCCPMessageType.DefineTimeDate,self.on_define_timedate)
@@ -83,6 +83,7 @@ class SCCPPhone():
         self.protocol.add_handler(SCCPMessageType.LineStatMessage,self.on_line_stat)
         self.protocol.add_handler(SCCPMessageType.RegisterRejectMessage,self.on_register_reject_message)
         self.protocol.add_handler(SCCPMessageType.SetRingerMessage,self.on_set_ringer_message)
+        self.protocol.add_handler(SCCPMessageType.Reset,self.on_reset_message)
 
     def register(self):
         self.log('registering device: ' + self.device_name)
@@ -103,29 +104,32 @@ class SCCPPhone():
     def on_set_ringer_message(self, message):
         self.log('ringer mode: ' + message.to_str())
 
-    def on_keep_alive_timer(self):
+    def on_reset_message(self, message):
+        self.log('got reset')
+
+    async def on_keep_alive_timer(self):
         self.log('on keep alive')
         message = SCCPMessage(SCCPMessageType.KeepAliveMessage)
         self.protocol.send_sccp_message(message)
 
-    def on_unknown_message(self,message):
+    def on_unknown_message(self, message):
         self.log('receive unkown message ' + message.to_str())
         self.messages_received.append(message.to_str())
 
-    def on_registeredAck(self,registerAck):
+    def on_registered_ack(self, register_ack):
         self.log("sccp phone registered")
-        self.log("--          keep_alive_interval : " + str(registerAck.keep_alive_interval))
-        self.log("--               date_template : " + str(registerAck.date_template))
-        self.log("-- secondarykeep_alive_interval : " + str(registerAck.secondarykeep_alive_interval))
-        self.timer_provider.create_timer(registerAck.keep_alive_interval,self.on_keep_alive_timer)
+        self.log("--          keep_alive_interval : " + str(register_ack.keep_alive_interval))
+        self.log("--               date_template : " + str(register_ack.date_template))
+        self.log("-- secondarykeep_alive_interval : " + str(register_ack.secondarykeep_alive_interval))
+        self.timer_provider.create_timer(register_ack.keep_alive_interval, self.on_keep_alive_timer)
         self.registeredHandler.on_registered()
-        self.messages_received.append(registerAck.to_str())
+        self.messages_received.append(register_ack.to_str())
 
 
-    def on_keep_alive_ack(self,message):
+    def on_keep_alive_ack(self, message):
         self.log("Keepalive ack")
 
-    def on_capabilities_req(self,message):
+    def on_capabilities_req(self, message):
         self.log("sending capabilities response")
         self.protocol.send_sccp_message(SCCPCapabilitiesRes())
         self.log("sending button template request message")
@@ -137,16 +141,14 @@ class SCCPPhone():
         self.log("sending time date request message")
         self.protocol.send_sccp_message(SCCPTimeDateReq())
 
-
-
-    def on_define_timedate(self,message):
+    def on_define_timedate(self, message):
         self.log('define time and date')
         self.datetime_picker.set_datetime(message.day, message.month, message.year, message.hour, message.minute, message.seconds)
 
-    def on_set_speaker_mode(self,message):
+    def on_set_speaker_mode(self, message):
         self.log('set speaker mode ' + str(message.mode))
 
-    def on_call_state(self,message):
+    def on_call_state(self, message):
         self.log('call state line : ' + str(message.line) + ' for callId '+ str(message.callId) + ' is ' + str(SCCPCallState.sccp_channelstates[message.callState]))
         self.current_line = message.line
         self.current_call_id = message.callId
