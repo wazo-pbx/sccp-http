@@ -60,8 +60,9 @@ class SCCPPhoneContoller:
                     self.current_call_id = callid
                     self.current_line = line
         if call_state == SCCPCallState.SCCP_CHANNELSTATE_CONNECTED:
-            timer_in_sec = 5 #random.randrange(self.call_duration_min,self.call_duration_max)
-            self.timer_provider.create_one_shot_timer(timer_in_sec, self.on_call_end_timer)
+            pass
+            # timer_in_sec = 5 #random.randrange(self.call_duration_min,self.call_duration_max)
+            # self.timer_provider.create_one_shot_timer(timer_in_sec, self.on_call_end_timer)
 
         if call_state == SCCPCallState.SCCP_CHANNELSTATE_ONHOOK and self.current_call_id == callid:
             self.current_call_id = 0
@@ -109,7 +110,7 @@ async def register_phone(host, port, name, loop):
 
     controller.set_phone(phone)
     controller.set_timer_provider(controller)
-    controller.set_auto_answer(True)
+    controller.set_auto_answer(False)
 
     transport, protocol =  await loop.create_connection(SCCPProtocol, host, port)
     task = asyncio.create_task(phone.run(protocol))
@@ -139,11 +140,13 @@ async def hangup_call():
 
 async def pickup_call():
     """
-    Call a given endpoint
+    Pick up a call
     """
     if controller:
         task = asyncio.create_task(controller.phone.answer_call())
         await task
+    else:
+        raise DeviceNotRegistered()
 
 async def get_received_phone_events(future):
     """
@@ -173,7 +176,7 @@ async def get_phone_states(future):
         future.set_result(controller.phone.states_history)
         await future
     else:
-        future.set_result(None)
+        raise DeviceNotRegistered()
 
 async def main(loop):
     """
