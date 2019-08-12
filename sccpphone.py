@@ -14,6 +14,8 @@ from sccp.sccpkeypadbutton import SCCPKeyPadButton
 from sccp.sccpsoftkeyevent import SCCPSoftKeyEvent
 from sccp.sccpmessage import SCCPMessage
 from sccp.sccplinestatreq import SCCPLineStatReq
+from sccp.sccpopenreceivechannelack import SCCPOpenReceiveChannelAck
+from network.ip_address import IpAddress
 import struct
 
 SKINNY_LBL_EMPTY = 0
@@ -43,9 +45,18 @@ class SCCPPhone():
         self.call_in_progress = False
         self.messages_received = []
         self.states_history = []
+        self._ip_addr = ''
 
     def set_logger(self, logger):
         self.log = logger
+
+    @property
+    def ip_addr(self):
+        return self._ip_addr
+
+    @ip_addr.setter
+    def ip_addr(self, value: str):
+        self._ip_addr = IpAddress(value)
 
     async def run(self, protocol):
         self.complete_construction(protocol)
@@ -84,11 +95,21 @@ class SCCPPhone():
         self.protocol.add_handler(SCCPMessageType.RegisterRejectMessage,self.on_register_reject_message)
         self.protocol.add_handler(SCCPMessageType.SetRingerMessage,self.on_set_ringer_message)
         self.protocol.add_handler(SCCPMessageType.Reset,self.on_reset_message)
+        self.protocol.add_handler(SCCPMessageType.OpenReceiveChannel,self.on_open_receive_channel)
 
     def register(self):
         self.log('registering device: ' + self.device_name)
         register_message = SCCPRegister(self.device_name, self.host)
         self.protocol.send_sccp_message(register_message)
+
+    def on_open_receive_channel(self, msg):
+        self.log('on_open_receive_channel!')
+        print(msg.compression_type)
+        ack = SCCPOpenReceiveChannelAck()
+        ack.ip_addr = self.ip_addr
+        self.protocol.send_sccp_message(ack)
+
+
 
     def on_sccp_connect_success(self):
         # reason is a twisted.python.failure.Failure  object
@@ -195,7 +216,7 @@ class SCCPPhone():
             message = SCCPSoftKeyEvent(event)
         self.protocol.send_sccp_message(message)
 
-    def answer_call(self):
+    async def answer_call(self):
         self.on_soft_key(SKINNY_LBL_ANSWER)
 
     def end_call(self, line, callId):

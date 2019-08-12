@@ -60,7 +60,7 @@ class SCCPProtocol(asyncio.Protocol):
     def handle_unknown_message(self, unknownHandler):
         self.message_handlers[self.UNKNOWN_KEY] = unknownHandler
 
-    def handle_message(self,message):
+    def handle_message(self, message):
         if message.sccp_message_type in self.message_handlers:
             self.message_handlers[message.sccp_message_type](message)
         else:

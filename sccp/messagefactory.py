@@ -16,6 +16,7 @@ from sccp.sccpcallstate import SCCPCallState
 from sccp.sccpactivatecallplane import SCCPActivateCallPlane
 from sccp.sccpstarttone import SCCPStartTone
 from sccp.sccplinestat import SCCPLineStat
+from sccp.sccpopenreceivechannel import SCCPOpenReceiveChannel
 
 class MessageFactory():
     '''
@@ -31,12 +32,13 @@ class MessageFactory():
                 SCCPMessageType.CallStateMessage: SCCPCallState,
                 SCCPMessageType.ActivateCallPlaneMessage: SCCPActivateCallPlane,
                 SCCPMessageType.StartToneMessage: SCCPStartTone,
-                SCCPMessageType.LineStatMessage:SCCPLineStat}
+                SCCPMessageType.LineStatMessage:SCCPLineStat,
+                SCCPMessageType.OpenReceiveChannel:SCCPOpenReceiveChannel}
 
     def __init__(self):
         '''
         '''
-    def create(self,buffer):
+    def create(self, buffer):
         message_type = unpack("I", buffer[4:8])[0]
         msg = SCCPMessage(message_type)
 

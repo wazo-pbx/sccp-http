@@ -51,10 +51,14 @@ async def hangup():
     await hangup_call()
 
 @app.get("/status")
-async def status():
+async def status(response: Response):
     status = asyncio.Future()
-    await get_phone_status(status)
-    return {"callInProgress": status.result()}
+    try:
+        await get_phone_status(status)
+        return status.result()
+    except DeviceNotRegistered as error:
+        response.status_code = HTTP_404_NOT_FOUND
+        return error.message
 
 @app.post("/answer")
 async def answer(response: Response):

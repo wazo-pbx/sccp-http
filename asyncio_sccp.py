@@ -113,6 +113,7 @@ async def register_phone(host, port, name, loop):
     controller.set_auto_answer(False)
 
     transport, protocol =  await loop.create_connection(SCCPProtocol, host, port)
+    phone.ip_addr = transport.get_extra_info('sockname')[0]
     task = asyncio.create_task(phone.run(protocol))
     await task
 
@@ -163,10 +164,10 @@ async def get_phone_status(future):
     Get the status of the phone, i.e. is a call in progress?
     """
     if controller:
-        future.set_result(controller.phone.call_in_progress)
+        future.set_result({"callInProgress": controller.phone.call_in_progress})
         await future
     else:
-        future.set_result(None)
+        raise DeviceNotRegistered()
 
 async def get_phone_states(future):
     """
