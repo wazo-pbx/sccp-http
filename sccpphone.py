@@ -55,8 +55,11 @@ class SCCPPhone():
         return self._ip_addr
 
     @ip_addr.setter
-    def ip_addr(self, value: str):
-        self._ip_addr = IpAddress(value)
+    def ip_addr(self, value):
+        if isinstance(value, str):
+            self._ip_addr = IpAddress(value)
+        else:
+            self._ip_addr = value
 
     async def run(self, protocol):
         self.complete_construction(protocol)
