@@ -11,7 +11,7 @@ from fastapi import FastAPI
 from asyncio_sccp import register_phone, place_call, hangup_call, pickup_call
 from asyncio_sccp import get_received_phone_events, get_phone_status, get_phone_states
 from starlette.responses import Response, JSONResponse
-from sccpphone_errors import DeviceAlreadyRegistered, DeviceNotRegistered
+from sccpphone_errors import DeviceAlreadyRegistered, DeviceNotRegistered, NoCallInProgress
 from starlette.status import HTTP_404_NOT_FOUND, HTTP_409_CONFLICT
 app = FastAPI()
 
@@ -47,8 +47,15 @@ async def history(response: Response):
 
 
 @app.post("/hangup")
-async def hangup():
-    await hangup_call()
+async def hangup(response: Response):
+    try:
+        await hangup_call()
+    except DeviceNotRegistered as error:
+        response.status_code = HTTP_404_NOT_FOUND
+        return error.message
+    except NoCallInProgress as error:
+        response.status_code = HTTP_404_NOT_FOUND
+        return error.message
 
 @app.get("/status")
 async def status(response: Response):

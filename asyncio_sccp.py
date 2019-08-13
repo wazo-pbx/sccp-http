@@ -5,7 +5,7 @@ import time
 from network.sccpprotocol import SCCPProtocol
 from sccp.sccpcallstate import SCCPCallState
 import logging
-from sccpphone_errors import DeviceAlreadyRegistered, DeviceNotRegistered
+from sccpphone_errors import DeviceAlreadyRegistered, DeviceNotRegistered, NoCallInProgress
 
 class SCCPPhoneContoller:
     def __init__(self):
@@ -136,8 +136,12 @@ async def hangup_call():
     hangup a call in progress
     """
     if controller:
+        if not controller.phone.call_in_progress:
+            raise NoCallInProgress()
         task = asyncio.create_task(controller.hangup())
         await task
+    else:
+        raise DeviceNotRegistered()
 
 async def pickup_call():
     """
