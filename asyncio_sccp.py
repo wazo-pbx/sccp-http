@@ -168,7 +168,9 @@ async def get_phone_status(future):
     Get the status of the phone, i.e. is a call in progress?
     """
     if controller:
-        future.set_result({"callInProgress": controller.phone.call_in_progress})
+        future.set_result({"callInProgress": controller.phone.call_in_progress,
+            "ringing": controller.phone.ringing, "callWaiting": controller.phone.call_waiting
+        })
         await future
     else:
         raise DeviceNotRegistered()

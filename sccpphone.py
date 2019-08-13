@@ -44,6 +44,8 @@ class SCCPPhone():
         self.call_handler = set()
         self.registered = False
         self.call_in_progress = False
+        self.ringing = False
+        self.call_waiting = False
         self.messages_received = []
         self.states_history = []
         self._ip_addr = ''
@@ -183,6 +185,8 @@ class SCCPPhone():
         self.current_call_id = message.callId
         self.callState = message.callState
         self.call_in_progress = message.callState == SCCPCallState.SCCP_CHANNELSTATE_CONNECTED
+        self.ringing = message.callState == SCCPCallState.SCCP_CHANNELSTATE_RINGING
+        self.call_waiting = message.callState == SCCPCallState.SCCP_CHANNELSTATE_CALLWAITING
         self.messages_received.append(message.to_str())
         self.states_history.append(SCCPCallState.sccp_channelstates[message.callState])
 
