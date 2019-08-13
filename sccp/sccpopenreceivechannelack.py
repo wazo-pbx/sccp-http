@@ -11,7 +11,7 @@ class SCCPOpenReceiveChannelAck(SCCPMessage):
 
     def __init__(self):
         SCCPMessage.__init__(self, SCCPMessageType.OpenReceiveChannelAck)
-        self.port_number = 26446
+        self.port_number = 26446 # this is just a placeholder value for now...
 
     def pack(self):
         packed = SCCPMessage.pack(self)

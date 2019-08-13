@@ -74,11 +74,11 @@ class SCCPPhoneContoller:
 
     async def on_call_end_timer(self):
         self.log('ending call...')
-        self.phone.end_call(self.current_line, self.current_call_id)
+        self.phone.end_call()
         self.log('ended call...')
 
     async def hangup(self):
-        self.phone.end_call(self.current_line, self.current_call_id)
+        self.phone.end_call()
 
     async def call(self, number):
         self.phone.dial(str(number) + '#')

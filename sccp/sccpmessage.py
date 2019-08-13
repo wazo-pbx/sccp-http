@@ -12,7 +12,7 @@ class SCCPMessage:
 
     def __init__(self, sccp_message_type):
         self.sccp_message_type = sccp_message_type
-        self.reserved=0x00
+        self.reserved = 0x00
 
     def __eq__(self, other):
         if (self.__class__.__name__ != other.__class__.__name__):

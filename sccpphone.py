@@ -15,6 +15,7 @@ from sccp.sccpsoftkeyevent import SCCPSoftKeyEvent
 from sccp.sccpmessage import SCCPMessage
 from sccp.sccplinestatreq import SCCPLineStatReq
 from sccp.sccpopenreceivechannelack import SCCPOpenReceiveChannelAck
+from sccp.sccpclosereceivechannel import SCCPCloseReceiveChannel
 from network.ip_address import IpAddress
 import struct
 
@@ -99,6 +100,7 @@ class SCCPPhone():
         self.protocol.add_handler(SCCPMessageType.SetRingerMessage,self.on_set_ringer_message)
         self.protocol.add_handler(SCCPMessageType.Reset,self.on_reset_message)
         self.protocol.add_handler(SCCPMessageType.OpenReceiveChannel,self.on_open_receive_channel)
+        self.protocol.add_handler(SCCPMessageType.CloseReceiveChannel,self.on_close_receive_channel)
 
     def register(self):
         self.log('registering device: ' + self.device_name)
@@ -106,13 +108,16 @@ class SCCPPhone():
         self.protocol.send_sccp_message(register_message)
 
     def on_open_receive_channel(self, msg):
-        self.log('on_open_receive_channel!')
+        self.log('openning channel')
         print(msg.compression_type)
         ack = SCCPOpenReceiveChannelAck()
         ack.ip_addr = self.ip_addr
         self.protocol.send_sccp_message(ack)
+        self.current_call_id = msg.conference_id
 
-
+    def on_close_receive_channel(self, msg):
+        self.log('closing channel')
+        # print(hex(msg.conference_id), hex(msg.party_id), hex(msg.conference_id_1))
 
     def on_sccp_connect_success(self):
         # reason is a twisted.python.failure.Failure  object
@@ -182,7 +187,7 @@ class SCCPPhone():
         self.states_history.append(SCCPCallState.sccp_channelstates[message.callState])
 
         for callHandler in self.call_handler:
-            callHandler.handle_call(message.line,message.callId,message.callState)
+            callHandler.handle_call(message.line, message.callId, message.callState)
 
     def on_line_stat(self, message):
         self.log('line stat ' + str(message.line) + ' : ' + message.dirNumber.decode('utf-8'))
@@ -214,7 +219,7 @@ class SCCPPhone():
     def on_soft_key(self, event):
         self.log('on soft key ' + str(event))
         if (event != "SKINNY_LBL_NEWCALL"):
-            message = SCCPSoftKeyEvent(event,self.current_line,self.current_call_id)
+            message = SCCPSoftKeyEvent(event, self.current_line, self.current_call_id)
         else:
             message = SCCPSoftKeyEvent(event)
         self.protocol.send_sccp_message(message)
@@ -222,6 +227,6 @@ class SCCPPhone():
     async def answer_call(self):
         self.on_soft_key(SKINNY_LBL_ANSWER)
 
-    def end_call(self, line, callId):
-        message = SCCPSoftKeyEvent(SKINNY_LBL_ENDCALL,line,callId)
+    def end_call(self):
+        message = SCCPSoftKeyEvent(SKINNY_LBL_ENDCALL, self.current_line, self.current_call_id)
         self.protocol.send_sccp_message(message)

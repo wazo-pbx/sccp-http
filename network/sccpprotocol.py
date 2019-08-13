@@ -2,8 +2,6 @@ import asyncio
 import struct
 from sccp.messagefactory import MessageFactory
 
-def make_sccp_packet(msg):
-    return struct.pack("<L", len(msg.pack())) + msg.pack() + b"\x00\x00\x00\x00"
 
 class SCCPProtocol(asyncio.Protocol):
 
