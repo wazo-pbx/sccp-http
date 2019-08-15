@@ -50,6 +50,10 @@ class SCCPPhoneContoller:
     def set_auto_answer(self, auto_answer):
         self.auto_answer = auto_answer
 
+    async def clear_phone_history(self):
+        self.phone.messages_received = []
+        self.phone.states_history = []
+
 
     def handle_call(self, line, callid, call_state):
         if not self.auto_answer:
@@ -111,7 +115,6 @@ async def register_phone(host, port, name, loop):
     controller.set_phone(phone)
     controller.set_timer_provider(controller)
     controller.set_auto_answer(False)
-
     transport, protocol =  await loop.create_connection(SCCPProtocol, host, port)
     phone.ip_addr = transport.get_extra_info('sockname')[0]
     task = asyncio.create_task(phone.run(protocol))
@@ -129,6 +132,16 @@ async def place_call(number_to_dial):
         raise DeviceNotRegistered()
     else:
         task = asyncio.create_task(controller.call(number_to_dial))
+        await task
+
+async def clear_history():
+    """
+    Call a given endpoint
+    """
+    if not controller:
+        raise DeviceNotRegistered()
+    else:
+        task = asyncio.create_task(controller.clear_phone_history())
         await task
 
 async def hangup_call():

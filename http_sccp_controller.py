@@ -74,3 +74,11 @@ async def answer(response: Response):
     except DeviceNotRegistered as error:
         response.status_code = HTTP_404_NOT_FOUND
         return error.message
+
+@app.delete("/clear")
+async def clear_history(response: Response):
+    try:
+        await pickup_call()
+    except DeviceNotRegistered as error:
+        response.status_code = HTTP_404_NOT_FOUND
+        return error.message
