@@ -3,10 +3,10 @@ Created on Jun 14, 2011
 
 @author: lebleu1
 '''
-from sccp.sccpmessage import SCCPMessage
-from sccp.sccpmessagetype import SCCPMessageType
+from sccp_http.sccp.sccpmessage import SCCPMessage
+from sccp_http.sccp.sccpmessagetype import SCCPMessageType
 from struct import pack
-from network.ip_address import IpAddress
+from sccp_http.network.ip_address import IpAddress
 
 class SCCPCapabilitiesRes(SCCPMessage):
     '''

@@ -1,11 +1,11 @@
 import asyncio
-from sccpphone import SCCPPhone
-from utils.timer import Timer
+from .sccpphone import SCCPPhone
+from .utils.timer import Timer
 import time
-from network.sccpprotocol import SCCPProtocol
-from sccp.sccpcallstate import SCCPCallState
+from .network.sccpprotocol import SCCPProtocol
+from .sccp.sccpcallstate import SCCPCallState
 import logging
-from sccpphone_errors import DeviceAlreadyRegistered, DeviceNotRegistered, NoCallInProgress
+from .sccpphone_errors import DeviceAlreadyRegistered, DeviceNotRegistered, NoCallInProgress
 
 class SCCPPhoneContoller:
     def __init__(self):

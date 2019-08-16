@@ -3,8 +3,8 @@ Created on Aug 13, 2019
 
 @author: nballas
 '''
-from sccp.sccpmessage import SCCPMessage
-from sccp.sccpmessagetype import SCCPMessageType
+from sccp_http.sccp.sccpmessage import SCCPMessage
+from sccp_http.sccp.sccpmessagetype import SCCPMessageType
 from struct import unpack
 
 class SCCPCloseReceiveChannel(SCCPMessage):

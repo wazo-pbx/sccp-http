@@ -1,6 +1,6 @@
 import asyncio
 import struct
-from sccp.messagefactory import MessageFactory
+from sccp_http.sccp.messagefactory import MessageFactory
 
 
 class SCCPProtocol(asyncio.Protocol):

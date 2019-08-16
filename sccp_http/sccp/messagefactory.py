@@ -5,19 +5,19 @@ Created on Jun 14, 2011
 '''
 
 from struct import unpack
-from sccp.sccpmessagetype import SCCPMessageType
-from sccp.sccpregisterack import SCCPRegisterAck
-from sccp.sccpmessage import SCCPMessage
-from sccp.sccpcapabilitiesreq import SCCPCapabilitiesReq
-from sccp.sccpkeepaliveack import SCCPKeepAliveAck
-from sccp.sccpdefinetimedate import SCCPDefineTimeDate
-from sccp.sccpsetspeakermode import SCCPSetSpeakerMode
-from sccp.sccpcallstate import SCCPCallState
-from sccp.sccpactivatecallplane import SCCPActivateCallPlane
-from sccp.sccpstarttone import SCCPStartTone
-from sccp.sccplinestat import SCCPLineStat
-from sccp.sccpopenreceivechannel import SCCPOpenReceiveChannel
-from sccp.sccpclosereceivechannel import SCCPCloseReceiveChannel
+from sccp_http.sccp.sccpmessagetype import SCCPMessageType
+from sccp_http.sccp.sccpregisterack import SCCPRegisterAck
+from sccp_http.sccp.sccpmessage import SCCPMessage
+from sccp_http.sccp.sccpcapabilitiesreq import SCCPCapabilitiesReq
+from sccp_http.sccp.sccpkeepaliveack import SCCPKeepAliveAck
+from sccp_http.sccp.sccpdefinetimedate import SCCPDefineTimeDate
+from sccp_http.sccp.sccpsetspeakermode import SCCPSetSpeakerMode
+from sccp_http.sccp.sccpcallstate import SCCPCallState
+from sccp_http.sccp.sccpactivatecallplane import SCCPActivateCallPlane
+from sccp_http.sccp.sccpstarttone import SCCPStartTone
+from sccp_http.sccp.sccplinestat import SCCPLineStat
+from sccp_http.sccp.sccpopenreceivechannel import SCCPOpenReceiveChannel
+from sccp_http.sccp.sccpclosereceivechannel import SCCPCloseReceiveChannel
 
 class MessageFactory():
     '''

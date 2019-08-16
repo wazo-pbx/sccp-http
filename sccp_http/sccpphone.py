@@ -3,20 +3,20 @@ Created on Jun 20, 2011
 
 @author: lebleu1
 '''
-from sccp.sccpmessagetype import SCCPMessageType
-from sccp.sccpregister import SCCPRegister
-from sccp.sccpcapabilities import SCCPCapabilitiesRes
-from sccp.sccpbuttontemplatereq import SCCPButtonTemplateReq
-from sccp.sccpregisteravailablelines import SCCPRegisterAvailableLines
-from sccp.sccptimedatereq import SCCPTimeDateReq
-from sccp.sccpcallstate import SCCPCallState
-from sccp.sccpkeypadbutton import SCCPKeyPadButton
-from sccp.sccpsoftkeyevent import SCCPSoftKeyEvent
-from sccp.sccpmessage import SCCPMessage
-from sccp.sccplinestatreq import SCCPLineStatReq
-from sccp.sccpopenreceivechannelack import SCCPOpenReceiveChannelAck
-from sccp.sccpclosereceivechannel import SCCPCloseReceiveChannel
-from network.ip_address import IpAddress
+from .sccp.sccpmessagetype import SCCPMessageType
+from .sccp.sccpregister import SCCPRegister
+from .sccp.sccpcapabilities import SCCPCapabilitiesRes
+from .sccp.sccpbuttontemplatereq import SCCPButtonTemplateReq
+from .sccp.sccpregisteravailablelines import SCCPRegisterAvailableLines
+from .sccp.sccptimedatereq import SCCPTimeDateReq
+from .sccp.sccpcallstate import SCCPCallState
+from .sccp.sccpkeypadbutton import SCCPKeyPadButton
+from .sccp.sccpsoftkeyevent import SCCPSoftKeyEvent
+from .sccp.sccpmessage import SCCPMessage
+from .sccp.sccplinestatreq import SCCPLineStatReq
+from .sccp.sccpopenreceivechannelack import SCCPOpenReceiveChannelAck
+from .sccp.sccpclosereceivechannel import SCCPCloseReceiveChannel
+from .network.ip_address import IpAddress
 import struct
 
 SKINNY_LBL_EMPTY = 0

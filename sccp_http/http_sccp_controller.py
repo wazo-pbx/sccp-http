@@ -8,10 +8,10 @@ to run: uvicorn http_sccp_controller:app --reload
 
 import asyncio
 from fastapi import FastAPI
-from asyncio_sccp import register_phone, place_call, hangup_call, pickup_call, clear_history
-from asyncio_sccp import get_received_phone_events, get_phone_status, get_phone_states
+from .asyncio_sccp import register_phone, place_call, hangup_call, pickup_call, clear_history
+from .asyncio_sccp import get_received_phone_events, get_phone_status, get_phone_states
 from starlette.responses import Response, JSONResponse
-from sccpphone_errors import DeviceAlreadyRegistered, DeviceNotRegistered, NoCallInProgress
+from .sccpphone_errors import DeviceAlreadyRegistered, DeviceNotRegistered, NoCallInProgress
 from starlette.status import HTTP_404_NOT_FOUND, HTTP_409_CONFLICT
 app = FastAPI()
 
