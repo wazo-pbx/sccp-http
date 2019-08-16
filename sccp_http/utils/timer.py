@@ -1,5 +1,7 @@
-import asyncio
+# Copyright 2019 The Wazo Authors  (see the AUTHORS file)
+# SPDX-License-Identifier: GPL-3.0-or-later
 
+import asyncio
 
 class Timer:
     def __init__(self, timeout, callback, repeating=True):
@@ -15,7 +17,7 @@ class Timer:
 
             if not self._repeating:
                 self._stop_flag = True
-                
+
             await asyncio.sleep(self._timeout)
 
 

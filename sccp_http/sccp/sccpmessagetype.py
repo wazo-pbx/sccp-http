@@ -1,8 +1,5 @@
-'''
-Created on Jun 10 2011
-
-@author: lebleu1
-'''
+# Copyright 2011-2019 The Wazo Authors  (see the AUTHORS file)
+# SPDX-License-Identifier: GPL-3.0-or-later
 
 class SCCPMessageType:
     '''
@@ -57,7 +54,7 @@ class SCCPMessageType:
     DeviceToUserDataVersion1Message = 0x0041
     DeviceToUserDataResponseVersion1Message = 0x0042
 
-    # This are from protocol V 11 CCM7 
+    # This are from protocol V 11 CCM7
     DialedPhoneBookMessage = 0x0048
     AccessoryStatusMessage = 0x0049
     Unknown_0x004A_Message = 0x004A

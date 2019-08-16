@@ -1,10 +1,5 @@
-'''
-Created on Aug 7, 2019
-
-@author: nballas
-@about: REST interface to the asyncio_sccp phone
-to run: uvicorn http_sccp_controller:app --reload
-'''
+# Copyright 2019 The Wazo Authors  (see the AUTHORS file)
+# SPDX-License-Identifier: GPL-3.0-or-later
 
 import asyncio
 from fastapi import FastAPI

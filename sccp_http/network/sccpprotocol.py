@@ -1,3 +1,5 @@
+# Copyright 2019 The Wazo Authors  (see the AUTHORS file)
+# SPDX-License-Identifier: GPL-3.0-or-later
 import asyncio
 import struct
 from sccp_http.sccp.messagefactory import MessageFactory

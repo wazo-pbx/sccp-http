@@ -1,3 +1,6 @@
+# Copyright 2019 The Wazo Authors  (see the AUTHORS file)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 from setuptools import setup, find_packages
 from os import path
 
@@ -5,7 +8,7 @@ here = path.abspath(path.dirname(__file__))
 
 setup(
     name='sccp-http',
-    version='1.3.0',
+    version='1.0.0',
     description='HTTP interface to SCCP phone',
     # author_email='pypa-dev@googlegroups.com',  # Optional
     classifiers=[  # Optional
@@ -31,15 +34,6 @@ setup(
         'dev': ['check-manifest'],
         'test': ['coverage'],
     },
-    # package_data={  # Optional
-    #     'sample': ['package_data.dat'],
-    # },
-    # data_files=[('my_data', ['data/data_file'])],  # Optional
-    # entry_points={  # Optional
-    #     'console_scripts': [
-    #         'sample=sample:main',
-    #     ],
-    # },
     project_urls={
         'Source': 'https://github.com/wazo-pbx/sccp-http',
     },

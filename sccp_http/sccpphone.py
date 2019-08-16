@@ -1,8 +1,6 @@
-'''
-Created on Jun 20, 2011
+# Copyright 2011-2019 The Wazo Authors  (see the AUTHORS file)
+# SPDX-License-Identifier: GPL-3.0-or-later
 
-@author: lebleu1
-'''
 from .sccp.sccpmessagetype import SCCPMessageType
 from .sccp.sccpregister import SCCPRegister
 from .sccp.sccpcapabilities import SCCPCapabilitiesRes

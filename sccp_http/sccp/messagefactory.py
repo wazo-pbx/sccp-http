@@ -1,8 +1,5 @@
-'''
-Created on Jun 14, 2011
-
-@author: lebleu1
-'''
+# Copyright 2011-2019 The Wazo Authors  (see the AUTHORS file)
+# SPDX-License-Identifier: GPL-3.0-or-later
 
 from struct import unpack
 from sccp_http.sccp.sccpmessagetype import SCCPMessageType
